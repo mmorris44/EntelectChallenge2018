@@ -14,7 +14,7 @@ public class GreedySolution {
     public static ArrayList<WorkerTrack> tracks;
 
     public static void main(String[] args) {
-        String filename = "maps/map_3.input";
+        String filename = "maps/map_5.input";
         InputParser ip = new InputParser(filename);
         ip.read();
         ip.generateResources();
@@ -27,15 +27,20 @@ public class GreedySolution {
 
         tracks = new ArrayList<>();
 
-        for (Worker worker : workers) {
-            tracks.add(new WorkerTrack(worker));
+        for (int w = 0; w < workers.size(); ++w) {
+            Worker worker = workers.get(w);
+            WorkerTrack wt = new WorkerTrack(worker);
+            tracks.add(wt);
         }
 
         while (true) {
             Trip minTrip = null;
             for (WorkerTrack track : tracks) {
                 Trip trip = track.minTrip;
-                if (trip != null && (minTrip == null || trip.distance < minTrip.distance)) {
+                if (trip != null && (minTrip == null
+                        || trip.distance < minTrip.distance
+                        || (minTrip.distance == trip.distance && trip.getCost() < minTrip.getCost())
+                )) {
                     minTrip = trip;
                 }
             }
@@ -78,6 +83,13 @@ class Trip {
         this.worker = worker;
         this.destination = destination;
         this.distance = worker.node.getDistance(destination);
+    }
+
+    // Lower cost is better
+    public float getCost() {
+        float cost = 0;
+        cost = ((WorkerTrack) worker).store - worker.capacity; // Number of elements
+        return cost;
     }
 }
 

@@ -9,4 +9,8 @@ public class Node {
     public int getDistance (Node node) {
         return Math.abs(x - node.x) + Math.abs(y  - node.y);
     }
+
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }
