@@ -1,5 +1,4 @@
 public class Mine extends Node {
-    int x, y;
     int index;
 
     String tag;

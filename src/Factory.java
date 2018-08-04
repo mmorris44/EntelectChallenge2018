@@ -1,5 +1,4 @@
 public class Factory extends Node {
-    int x, y;
     int index;
 
     String tag;
