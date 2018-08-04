@@ -80,6 +80,20 @@ public class InputParser {
             String tag = mines.get(i).tag;
             map.put(tag, new Resource(tag));
         }
+
+        // Add mines
+        for (Mine mine : mines) {
+            String tag = mine.tag;
+            Resource resource = map.get(tag);
+            resource.mines.add(mine);
+        }
+
+        // Add factories
+        for (Factory factory : factories) {
+            String tag = factory.tag;
+            Resource resource = map.get(tag);
+            resource.factories.add(factory);
+        }
     }
 
 }
