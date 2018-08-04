@@ -9,5 +9,4 @@ public class Resource {
     public Resource (String tag) {
         this.tag = tag;
     }
-
 }
