@@ -2,6 +2,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class GreedySolution {
@@ -10,20 +11,21 @@ public class GreedySolution {
     public static ArrayList<Factory> factories;
     public static ArrayList<Resource> resources;
     public static Node workerStartNode = new Node(0, 0);
-    ;
+    public static ArrayList<WorkerTrack> tracks;
 
     public static void main(String[] args) {
-        String filename = "maps/map_1.input";
+        String filename = "maps/map_3.input";
         InputParser ip = new InputParser(filename);
         ip.read();
         ip.generateResources();
 
         workers = ip.workers;
+        Collections.reverse(workers);
         mines = ip.mines;
         factories = ip.factories;
         resources = ip.resources;
 
-        ArrayList<WorkerTrack> tracks = new ArrayList<WorkerTrack>();
+        tracks = new ArrayList<>();
 
         for (Worker worker : workers) {
             tracks.add(new WorkerTrack(worker));
@@ -32,7 +34,7 @@ public class GreedySolution {
         while (true) {
             Trip minTrip = null;
             for (WorkerTrack track : tracks) {
-                Trip trip = track.getNextMinTrip();
+                Trip trip = track.minTrip;
                 if (trip != null && (minTrip == null || trip.distance < minTrip.distance)) {
                     minTrip = trip;
                 }
@@ -83,7 +85,9 @@ class WorkerTrack extends Worker {
     public ArrayList<Node> nodes;
     HashMap<String, Boolean> resourceStore = new HashMap<String, Boolean>();
     public int cost = 0;
-    public int store = 0;
+    public int store = 0; // Number of elements in possession
+
+    public Trip minTrip;
 
     public WorkerTrack(int capacity) {
         super(capacity);
@@ -94,19 +98,22 @@ class WorkerTrack extends Worker {
         for (Resource resource : GreedySolution.resources) {
             resourceStore.put(resource.tag, false);
         }
+
+        this.updateNextMinTrip();
     }
 
     public WorkerTrack(Worker worker) {
         this(worker.capacity);
     }
 
-    public Trip getNextMinTrip() {
-        Trip minTrip = null;
+    public void updateNextMinTrip() {
+        minTrip = null;
 
         for (int i = 0; i < GreedySolution.resources.size(); i++) {
             Resource resource = GreedySolution.resources.get(i);
 
-            if (resourceStore.get(resource.tag) && this.store > 0) {
+            // If I have the resource, then check the factories
+            if (resourceStore.get(resource.tag)) {
                 ArrayList<Factory> factories = resource.factories;
                 for (int j = 0; j < factories.size(); j++) {
                     Factory factory = factories.get(j);
@@ -114,7 +121,9 @@ class WorkerTrack extends Worker {
                         minTrip = new Trip(this, factory);
                     }
                 }
-            } else if (this.store < this.capacity) {
+            }
+            // If I don't, then check for capacity to fetch things
+            else if (this.store < this.capacity) {
                 ArrayList<Mine> mines = resource.mines;
                 for (int j = 0; j < mines.size(); j++) {
                     Mine mine = mines.get(j);
@@ -124,8 +133,6 @@ class WorkerTrack extends Worker {
                 }
             }
         }
-
-        return minTrip;
     }
 
     public void appendTrip(Trip trip) {
@@ -141,11 +148,27 @@ class WorkerTrack extends Worker {
             this.node = mine;
             this.resourceStore.put(mine.tag, true);
             mine.supply -= 1;
+
+            // Check to update other min trips
+            if (mine.supply == 0) {
+                for (WorkerTrack track : GreedySolution.tracks) {
+                    Trip ntrip = track.minTrip;
+                    Node node = ntrip.destination;
+                    if (node instanceof Mine) {
+                        Mine nmine = (Mine) node;
+                        if (nmine == mine) {
+                            track.updateNextMinTrip();
+                        }
+                    }
+                }
+            }
+
             this.store += 1;
         }
 
         this.cost += trip.distance;
         this.nodes.add(this.node);
+        this.updateNextMinTrip();
     }
 
     public String toString() {
