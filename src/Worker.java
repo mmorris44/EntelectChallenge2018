@@ -1,10 +1,9 @@
 public class Worker {
     int capacity;
-    int x, y;
+    Node node;
 
     public Worker(int capacity) {
         this.capacity = capacity;
-        x = 0;
-        y = 0;
+        node = new Node(0, 0);
     }
 }

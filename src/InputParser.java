@@ -77,6 +77,7 @@ public class InputParser {
     }
 
     public void generateResources () {
+        System.out.println("Generating resources");
         // Make map
         HashMap<String, Resource> map = new HashMap<>();
         for (int i = 0; i < numberOfMines; ++i) {
@@ -97,6 +98,10 @@ public class InputParser {
             Resource resource = map.get(tag);
             resource.factories.add(factory);
         }
+
+        resources = new ArrayList<>(map.values());
+
+        System.out.println("Done generating resources");
     }
 
 }

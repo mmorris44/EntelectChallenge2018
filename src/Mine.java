@@ -1,4 +1,4 @@
-public class Mine {
+public class Mine extends Node {
     int x, y;
     int index;
 
@@ -6,8 +6,7 @@ public class Mine {
     int supply;
 
     public Mine(int index, String tag, int x, int y, int supply) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.index = index;
         this.tag = tag;
         this.supply = supply;
