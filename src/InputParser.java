@@ -7,7 +7,8 @@ import java.util.Scanner;
 public class InputParser {
 
     String filename = "";
-    int mapHeight, mapWidth, minerCount, excavatorCount, haulerCount, workerCount, numberOfMines, numberOfFactories, budget;
+    int mapHeight, mapWidth, minerCount, excavatorCount, haulerCount, workerCount, numberOfMines, numberOfFactories;
+    long budget;
 
     ArrayList<Worker> workers = new ArrayList<>();
     ArrayList<Mine> mines = new ArrayList<>();
@@ -28,10 +29,10 @@ public class InputParser {
             minerCount = scanner.nextInt();
             excavatorCount = scanner.nextInt();
             haulerCount = scanner.nextInt();
-            workerCount = scanner.nextInt();
+            workerCount = minerCount + excavatorCount + haulerCount;
             numberOfMines = scanner.nextInt();
             numberOfFactories = scanner.nextInt();
-            budget = scanner.nextInt();
+            budget = scanner.nextLong();
             scanner.nextLine();
 
             // Workers
@@ -63,10 +64,12 @@ public class InputParser {
                 String tag = scanner.next().toLowerCase();
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
-                scanner.nextLine();
 
                 factories.add(new Factory(index, tag, x, y));
             }
+
+            scanner.close();
+            System.out.println("Done reading");;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
